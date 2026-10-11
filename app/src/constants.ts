@@ -1,5 +1,5 @@
 import type { IconName } from './icons';
-import type { AgeGroup, Kind } from './types';
+import type { AgeGroup, Kind, Stroller } from './types';
 
 export const KINDS: Record<Kind, { label: string; icon: IconName; color: string }> = {
   playground: { label: 'Площадка', icon: 'playground', color: '#2aa9a0' },
@@ -20,3 +20,21 @@ export const AGES: { value: AgeGroup; label: string }[] = [
 ];
 
 export const MOSCOW: [number, number] = [55.7558, 37.6173];
+
+// Что именно мешает: выбирается в форме метки, когда тип «Препятствие».
+export const OBSTACLE_TAGS: { value: string; label: string }[] = [
+  { value: 'construction', label: 'Стройка / раскопки' },
+  { value: 'fence', label: 'Забор / ограждение' },
+  { value: 'steps', label: 'Ступеньки без пандуса' },
+  { value: 'kerb', label: 'Высокий бордюр' },
+  { value: 'surface', label: 'Плохое покрытие' },
+  { value: 'narrow', label: 'Узкий проход' },
+  { value: 'no-barrier-free', label: 'Нет безбарьерной среды' },
+];
+
+// Для мест (кафе, магазин, площадка и т. д.): можно ли с коляской.
+export const STROLLER: Record<Stroller, string> = {
+  yes: 'Можно с коляской',
+  partial: 'Частично',
+  no: 'С коляской нельзя',
+};

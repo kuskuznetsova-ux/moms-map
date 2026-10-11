@@ -78,6 +78,8 @@ interface PinRow {
   price: number | null;
   organizer: string | null;
   author_name: string;
+  tags?: string[] | null;
+  stroller?: Pin['stroller'] | null;
   reviews: ReviewRow[];
 }
 
@@ -91,6 +93,8 @@ const toPin = (r: PinRow): Pin => ({
   lng: r.lng,
   ages: r.ages ?? [],
   author: r.author_name,
+  ...(r.tags && r.tags.length ? { tags: r.tags } : {}),
+  ...(r.stroller ? { stroller: r.stroller } : {}),
   reviews: (r.reviews ?? []).map(toReview).sort((a, b) => a.date.localeCompare(b.date)),
   ...(r.starts_at ? { startsAt: r.starts_at } : {}),
   ...(r.price !== null ? { price: r.price } : {}),
@@ -134,6 +138,10 @@ function cloudApi(db: SupabaseClient): Api {
           price: p.price ?? null,
           organizer: p.organizer ?? null,
           author_name: p.author,
+          // Колонки tags/stroller добавлены миграцией; шлём их только когда заполнены,
+          // чтобы приложение не ломалось на базе без миграции.
+          ...(p.tags?.length ? { tags: p.tags } : {}),
+          ...(p.stroller ? { stroller: p.stroller } : {}),
         })
         .select('*, reviews(*)')
         .single();

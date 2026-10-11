@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { AGES, KIND_ORDER, KINDS } from '../constants';
+import { AGES, KIND_ORDER, KINDS, OBSTACLE_TAGS, STROLLER } from '../constants';
 import { Icon } from '../icons';
-import type { AgeGroup, Kind, NewPin } from '../types';
+import type { AgeGroup, Kind, NewPin, Stroller } from '../types';
 
 interface Props {
   at: { lat: number; lng: number };
@@ -17,9 +17,16 @@ export default function AddPinSheet({ at, author, onSave, onCancel }: Props) {
   const [ages, setAges] = useState<AgeGroup[]>([]);
   const [startsAt, setStartsAt] = useState('');
   const [price, setPrice] = useState('0');
+  const [tags, setTags] = useState<string[]>([]);
+  const [stroller, setStroller] = useState<Stroller | null>(null);
 
   const isEvent = kind === 'event';
-  const valid = title.trim().length > 0 && (!isEvent || startsAt);
+  const isObstacle = kind === 'obstacle';
+  const hasStroller = !isEvent && !isObstacle;
+  const autoTitle = isObstacle && tags.length > 0 ? OBSTACLE_TAGS.find((t) => t.value === tags[0])?.label ?? '' : '';
+  const finalTitle = title.trim() || autoTitle;
+  const valid = finalTitle.length > 0 && (!isEvent || startsAt);
+  const toggleTag = (t: string) => setTags((cur) => (cur.includes(t) ? cur.filter((x) => x !== t) : [...cur, t]));
 
   const toggleAge = (a: AgeGroup) => setAges((cur) => (cur.includes(a) ? cur.filter((x) => x !== a) : [...cur, a]));
 
@@ -39,7 +46,31 @@ export default function AddPinSheet({ at, author, onSave, onCancel }: Props) {
           </button>
         ))}
       </div>
-      <input placeholder="Название" value={title} onChange={(e) => setTitle(e.target.value)} />
+      {isObstacle && (
+        <>
+          <h3>Что именно мешает?</h3>
+          <div className="chips">
+            {OBSTACLE_TAGS.map((t) => (
+              <button key={t.value} type="button" className={`chip-btn${tags.includes(t.value) ? ' on' : ''}`} onClick={() => toggleTag(t.value)}>
+                {t.label}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+      {hasStroller && (
+        <>
+          <h3>Можно ли здесь с коляской?</h3>
+          <div className="chips">
+            {(Object.keys(STROLLER) as Stroller[]).map((v) => (
+              <button key={v} type="button" className={`chip-btn${stroller === v ? ' on' : ''}`} onClick={() => setStroller(stroller === v ? null : v)}>
+                {STROLLER[v]}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+      <input placeholder={autoTitle ? `Название (по умолчанию: ${autoTitle})` : 'Название'} value={title} onChange={(e) => setTitle(e.target.value)} />
       <textarea
         placeholder={isEvent ? 'О чём мероприятие?' : 'Что здесь удобно или неудобно?'}
         rows={2}
@@ -78,12 +109,14 @@ export default function AddPinSheet({ at, author, onSave, onCancel }: Props) {
         onClick={() =>
           onSave({
             kind,
-            title: title.trim(),
+            title: finalTitle,
             description: description.trim(),
             lat: at.lat,
             lng: at.lng,
             ages,
             author,
+            ...(isObstacle && tags.length ? { tags } : {}),
+            ...(hasStroller && stroller ? { stroller } : {}),
             ...(isEvent ? { startsAt: new Date(startsAt).toISOString(), price: Number(price) || 0, organizer: author } : {}),
           })
         }

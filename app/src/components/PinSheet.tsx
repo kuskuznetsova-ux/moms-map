@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AGES, KINDS } from '../constants';
+import { AGES, KINDS, OBSTACLE_TAGS, STROLLER } from '../constants';
 import { Icon } from '../icons';
 import type { Pin } from '../types';
 
@@ -35,6 +35,14 @@ export default function PinSheet({ pin, onClose, onReview, onReport }: Props) {
       {pin.ages.length > 0 && (
         <p className="meta"><Icon name="baby" size={16} /> {pin.ages.map((a) => AGES.find((x) => x.value === a)?.label).join(', ')}</p>
       )}
+      {pin.tags && pin.tags.length > 0 && (
+        <div className="chips">
+          {pin.tags.map((t) => (
+            <span key={t} className="chip kind" style={{ background: kind.color }}>{OBSTACLE_TAGS.find((x) => x.value === t)?.label ?? t}</span>
+          ))}
+        </div>
+      )}
+      {pin.stroller && <p className={`stroller ${pin.stroller}`}>{STROLLER[pin.stroller]}</p>}
       <p>{pin.description}</p>
       <p className="meta">Добавила: {pin.author}</p>
       <button className="link" onClick={() => onReport(pin.id)}>Пожаловаться на метку</button>
