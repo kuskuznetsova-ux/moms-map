@@ -1,13 +1,14 @@
+import type { IconName } from './icons';
 import type { AgeGroup, Kind } from './types';
 
-export const KINDS: Record<Kind, { label: string; emoji: string; color: string }> = {
-  playground: { label: 'Площадка', emoji: '🛝', color: '#2aa9a0' },
-  toilet: { label: 'Туалет / пеленание', emoji: '🚼', color: '#3b82c4' },
-  ramp: { label: 'Пандус / лифт', emoji: '♿', color: '#6b7bd6' },
-  obstacle: { label: 'Препятствие', emoji: '⚠️', color: '#d64545' },
-  cafe: { label: 'Кафе с детской', emoji: '🍰', color: '#e08a1e' },
-  shop: { label: 'Удобный магазин', emoji: '🛍️', color: '#a3195b' },
-  event: { label: 'Мероприятие', emoji: '🎈', color: '#7a3fb8' },
+export const KINDS: Record<Kind, { label: string; icon: IconName; color: string }> = {
+  playground: { label: 'Площадка', icon: 'playground', color: '#2aa9a0' },
+  toilet: { label: 'Туалет / пеленание', icon: 'toilet', color: '#3b82c4' },
+  ramp: { label: 'Пандус / лифт', icon: 'ramp', color: '#6b7bd6' },
+  obstacle: { label: 'Препятствие', icon: 'obstacle', color: '#d64545' },
+  cafe: { label: 'Кафе с детской', icon: 'cafe', color: '#e08a1e' },
+  shop: { label: 'Удобный магазин', icon: 'shop', color: '#a3195b' },
+  event: { label: 'Мероприятие', icon: 'balloon', color: '#7a3fb8' },
 };
 
 export const KIND_ORDER = Object.keys(KINDS) as Kind[];

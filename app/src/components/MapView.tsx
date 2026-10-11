@@ -2,14 +2,15 @@ import L from 'leaflet';
 import { useEffect } from 'react';
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from 'react-leaflet';
 import { KINDS, MOSCOW } from '../constants';
+import { iconSvg } from '../icons';
 import type { Pin } from '../types';
 
 const pinIcon = (p: Pin) =>
   L.divIcon({
     className: 'mm-icon',
-    html: `<span style="background:${KINDS[p.kind].color}">${KINDS[p.kind].emoji}</span>`,
-    iconSize: [36, 36],
-    iconAnchor: [18, 18],
+    html: `<span style="background:${KINDS[p.kind].color}">${iconSvg(KINDS[p.kind].icon, 20, 1.9)}</span>`,
+    iconSize: [38, 38],
+    iconAnchor: [19, 19],
   });
 
 function ClickCatcher({ active, onPick }: { active: boolean; onPick: (lat: number, lng: number) => void }) {
