@@ -79,12 +79,14 @@ export default function App() {
     }
   };
 
-  const addReview = async (pinId: string, rating: number, text: string) => {
+  const addReview = async (pinId: string, rating: number, text: string): Promise<boolean> => {
     try {
       const r = await api.addReview(pinId, { author: profile.name, rating, text });
       setPins((cur) => cur.map((p) => (p.id === pinId ? { ...p, reviews: [...p.reviews, r] } : p)));
+      return true;
     } catch {
-      say('Не удалось сохранить отзыв.');
+      say('Не удалось отправить отзыв. Проверьте интернет и попробуйте ещё раз.');
+      return false;
     }
   };
 

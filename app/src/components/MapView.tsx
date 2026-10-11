@@ -1,7 +1,7 @@
 import L from 'leaflet';
 import { useEffect } from 'react';
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from 'react-leaflet';
-import { KINDS, MOSCOW } from '../constants';
+import { KINDS, START_CENTER, START_ZOOM } from '../constants';
 import { iconSvg } from '../icons';
 import type { Pin } from '../types';
 
@@ -42,7 +42,7 @@ const OSM = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 
 export default function MapView({ pins, placing, flyTo, onPickPin, onPlace }: Props) {
   return (
-    <MapContainer center={MOSCOW} zoom={12} className={`map${placing ? ' placing' : ''}`} zoomControl={false}>
+    <MapContainer center={START_CENTER} zoom={START_ZOOM} className={`map${placing ? ' placing' : ''}`} zoomControl={false}>
       <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' url={OSM} />
       <ClickCatcher active={placing} onPick={onPlace} />
       <FlyTo target={flyTo} />
