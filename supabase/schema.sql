@@ -1,4 +1,4 @@
--- Схема для Supabase. Выполнить целиком в SQL Editor один раз.
+-- Схема для Supabase. Выполнить целиком в SQL Editor. Можно запускать повторно.
 -- Перед этим включить Authentication → Sign In / Providers → Anonymous Sign-Ins.
 
 create table if not exists public.pins (
@@ -31,13 +31,19 @@ alter table public.pins enable row level security;
 alter table public.reviews enable row level security;
 
 -- Читать могут все, кто вошёл (включая анонимный вход).
+drop policy if exists "pins read" on public.pins;
 create policy "pins read" on public.pins for select to authenticated using (true);
+drop policy if exists "reviews read" on public.reviews;
 create policy "reviews read" on public.reviews for select to authenticated using (true);
 
 -- Писать и удалять можно только своё.
+drop policy if exists "pins insert own" on public.pins;
 create policy "pins insert own" on public.pins for insert to authenticated with check (author_id = auth.uid());
+drop policy if exists "reviews insert own" on public.reviews;
 create policy "reviews insert own" on public.reviews for insert to authenticated with check (author_id = auth.uid());
+drop policy if exists "pins delete own" on public.pins;
 create policy "pins delete own" on public.pins for delete to authenticated using (author_id = auth.uid());
+drop policy if exists "reviews delete own" on public.reviews;
 create policy "reviews delete own" on public.reviews for delete to authenticated using (author_id = auth.uid());
 
 -- Жалобы на метки и отзывы. Отправлять может любой вошедший, читать — только владелец проекта
@@ -51,6 +57,7 @@ create table if not exists public.reports (
   created_at timestamptz not null default now()
 );
 alter table public.reports enable row level security;
+drop policy if exists "reports insert own" on public.reports;
 create policy "reports insert own" on public.reports for insert to authenticated with check (reporter_id = auth.uid());
 
 -- Права для роли authenticated (анонимный вход тоже даёт эту роль).
