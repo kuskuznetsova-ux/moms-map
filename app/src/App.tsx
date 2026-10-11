@@ -23,7 +23,8 @@ export default function App() {
   const [age, setAge] = useState<AgeGroup | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [placing, setPlacing] = useState(false);
-  const [draft, setDraft] = useState<{ lat: number; lng: number } | null>(null);
+  const [spot, setSpot] = useState<{ lat: number; lng: number } | null>(null); // выбранное на карте место
+  const [formOpen, setFormOpen] = useState(false); // false = ждём подтверждения места
   const [flyTo, setFlyTo] = useState<[number, number] | null>(null);
 
   const say = (m: string) => {
@@ -72,7 +73,8 @@ export default function App() {
     try {
       const created = await api.addPin(p);
       setPins((cur) => [...cur, created]);
-      setDraft(null);
+      setSpot(null);
+      setFormOpen(false);
       setSelectedId(created.id);
     } catch {
       say('Не удалось сохранить метку. Попробуйте ещё раз.');
@@ -106,7 +108,8 @@ export default function App() {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         // Координаты используются только чтобы поставить метку; сами по себе не сохраняются.
-        setDraft({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        setSpot({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        setFlyTo([pos.coords.latitude, pos.coords.longitude]);
         setPlacing(false);
       },
       () => say('Не удалось определить местоположение. Разрешите доступ или нажмите на карту.'),
@@ -133,12 +136,14 @@ export default function App() {
           <MapView
             pins={visiblePins}
             placing={placing}
-            flyTo={flyTo}
-            onPickPin={(p) => setSelectedId(p.id)}
-            onPlace={(lat, lng) => {
-              setDraft({ lat, lng });
+            spot={spot}
+            spotMode={spot ? (formOpen ? 'form' : 'pending') : null}
+            onSpot={(lat, lng) => {
+              setSpot({ lat, lng });
               setPlacing(false);
             }}
+            flyTo={flyTo}
+            onPickPin={(p) => setSelectedId(p.id)}
           />
           {loadError && <div className="banner error-banner">{loadError} <button onClick={() => void refresh()}>Повторить</button></div>}
           {placing && (
@@ -150,14 +155,34 @@ export default function App() {
               </span>
             </div>
           )}
-          {!placing && !draft && !selected && (
+          {!placing && !spot && !selected && (
             <button className="fab" onClick={() => setPlacing(true)} aria-label="Добавить метку"><Icon name="plus" size={28} stroke={2.2} /></button>
           )}
-          {!placing && !draft && !selected && pins.length === 0 && !loadError && (
+          {!placing && !spot && !selected && pins.length === 0 && !loadError && (
             <div className="empty">Карта пока пуста. Нажмите «+» и добавьте первое место.</div>
           )}
           {selected && <PinSheet pin={selected} onClose={() => setSelectedId(null)} onReview={addReview} onReport={report} />}
-          {draft && <AddPinSheet at={draft} author={profile.name} onCancel={() => setDraft(null)} onSave={savePin} />}
+          {spot && !formOpen && (
+            <div className="confirm" role="dialog" aria-label="Подтвердите место">
+              <b>Метка здесь?</b>
+              <span className="meta">Перетащите метку или нажмите в другое место на карте, чтобы поправить.</span>
+              <div className="row">
+                <button className="primary" onClick={() => setFormOpen(true)}>Да, добавить информацию</button>
+                <button className="ghost" onClick={() => setSpot(null)}>Отмена</button>
+              </div>
+            </div>
+          )}
+          {spot && formOpen && (
+            <AddPinSheet
+              at={spot}
+              author={profile.name}
+              onCancel={() => {
+                setSpot(null);
+                setFormOpen(false);
+              }}
+              onSave={savePin}
+            />
+          )}
         </>
       )}
       {tab === 'events' && <EventsList events={pins.filter((p) => p.kind === 'event')} ageFilter={age} onAge={setAge} onOpen={open} />}
