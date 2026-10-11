@@ -19,7 +19,9 @@ export const AGES: { value: AgeGroup; label: string }[] = [
   { value: '3-5', label: '3–5 лет' },
 ];
 
-export const MOSCOW: [number, number] = [55.7558, 37.6173];
+// Стартовая точка карты: пилотный район Черёмушки (центр примерный).
+export const START_CENTER: [number, number] = [55.67, 37.566];
+export const START_ZOOM = 15;
 
 // Что именно мешает: выбирается в форме метки, когда тип «Препятствие».
 export const OBSTACLE_TAGS: { value: string; label: string }[] = [

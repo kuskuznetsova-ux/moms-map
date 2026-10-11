@@ -11,13 +11,14 @@ const avg = (p: Pin) => (p.reviews.length ? p.reviews.reduce((s, r) => s + r.rat
 interface Props {
   pin: Pin;
   onClose: () => void;
-  onReview: (pinId: string, rating: number, text: string) => void;
+  onReview: (pinId: string, rating: number, text: string) => Promise<boolean>;
   onReport: (pinId: string) => void;
 }
 
 export default function PinSheet({ pin, onClose, onReview, onReport }: Props) {
   const [rating, setRating] = useState(5);
   const [text, setText] = useState('');
+  const [sending, setSending] = useState(false);
   const kind = KINDS[pin.kind];
   const rating_ = avg(pin);
 
@@ -61,11 +62,13 @@ export default function PinSheet({ pin, onClose, onReview, onReport }: Props) {
           ))}
           <form
             className="review-form"
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault();
-              if (!text.trim()) return;
-              onReview(pin.id, rating, text.trim());
-              setText('');
+              if (!text.trim() || sending) return;
+              setSending(true);
+              const ok = await onReview(pin.id, rating, text.trim());
+              setSending(false);
+              if (ok) setText(''); // при ошибке текст остаётся, можно отправить ещё раз
             }}
           >
             <div className="stars pick">
@@ -81,7 +84,10 @@ export default function PinSheet({ pin, onClose, onReview, onReport }: Props) {
               placeholder="Чем удобно или неудобно это место с детьми?"
               rows={2}
             />
-            <button className="primary" type="submit">Оставить отзыв</button>
+            {!text.trim() && <p className="meta">Напишите пару слов, и кнопка станет активной.</p>}
+            <button className="primary" type="submit" disabled={!text.trim() || sending}>
+              {sending ? 'Отправляю…' : 'Оставить отзыв'}
+            </button>
           </form>
         </>
       )}
