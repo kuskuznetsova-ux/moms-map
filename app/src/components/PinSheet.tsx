@@ -11,9 +11,10 @@ interface Props {
   pin: Pin;
   onClose: () => void;
   onReview: (pinId: string, rating: number, text: string) => void;
+  onReport: (pinId: string) => void;
 }
 
-export default function PinSheet({ pin, onClose, onReview }: Props) {
+export default function PinSheet({ pin, onClose, onReview, onReport }: Props) {
   const [rating, setRating] = useState(5);
   const [text, setText] = useState('');
   const kind = KINDS[pin.kind];
@@ -34,6 +35,8 @@ export default function PinSheet({ pin, onClose, onReview }: Props) {
         <p className="meta">👶 {pin.ages.map((a) => AGES.find((x) => x.value === a)?.label).join(', ')}</p>
       )}
       <p>{pin.description}</p>
+      <p className="meta">Добавила: {pin.author}</p>
+      <button className="link" onClick={() => onReport(pin.id)}>Пожаловаться на метку</button>
 
       {pin.kind !== 'event' && (
         <>

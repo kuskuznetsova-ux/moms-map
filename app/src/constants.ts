@@ -1,4 +1,4 @@
-import type { AgeGroup, Kind, MomStatus } from './types';
+import type { AgeGroup, Kind } from './types';
 
 export const KINDS: Record<Kind, { label: string; emoji: string; color: string }> = {
   playground: { label: 'Площадка', emoji: '🛝', color: '#2aa9a0' },
@@ -17,11 +17,5 @@ export const AGES: { value: AgeGroup; label: string }[] = [
   { value: '1-3', label: '1–3 года' },
   { value: '3-5', label: '3–5 лет' },
 ];
-
-export const STATUSES: Record<MomStatus, { label: string; emoji: string }> = {
-  walk: { label: 'Рада прогуляться вместе', emoji: '🚶‍♀️' },
-  craft: { label: 'Хочу творить с детьми', emoji: '🎨' },
-  chat: { label: 'Хочу пообщаться', emoji: '☕' },
-};
 
 export const MOSCOW: [number, number] = [55.7558, 37.6173];

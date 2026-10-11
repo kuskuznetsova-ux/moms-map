@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { AGES, KIND_ORDER, KINDS } from '../constants';
-import type { AgeGroup, Kind, Pin } from '../types';
+import type { AgeGroup, Kind, NewPin } from '../types';
 
 interface Props {
   at: { lat: number; lng: number };
   author: string;
-  onSave: (p: Pin) => void;
+  onSave: (p: NewPin) => void;
   onCancel: () => void;
 }
 
@@ -76,14 +76,13 @@ export default function AddPinSheet({ at, author, onSave, onCancel }: Props) {
         disabled={!valid}
         onClick={() =>
           onSave({
-            id: `u${Date.now()}`,
             kind,
             title: title.trim(),
             description: description.trim(),
             lat: at.lat,
             lng: at.lng,
             ages,
-            reviews: [],
+            author,
             ...(isEvent ? { startsAt: new Date(startsAt).toISOString(), price: Number(price) || 0, organizer: author } : {}),
           })
         }

@@ -1,81 +1,46 @@
 import { useState } from 'react';
-import { STATUSES } from '../constants';
-import type { Me, MomStatus } from '../types';
+import { api } from '../api';
+import type { Profile } from '../profile';
 
 interface Props {
-  me: Me;
-  onChange: (m: Me) => void;
+  profile: Profile;
+  onRename: (name: string) => void;
+  onDeleted: () => void;
 }
 
-export default function ProfileTab({ me, onChange }: Props) {
-  const [interest, setInterest] = useState('');
-  const [geoError, setGeoError] = useState('');
+export default function ProfileTab({ profile, onRename, onDeleted }: Props) {
+  const [name, setName] = useState(profile.name);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
 
-  const addInterest = () => {
-    const v = interest.trim();
-    if (v && !me.interests.includes(v)) onChange({ ...me, interests: [...me.interests, v] });
-    setInterest('');
-  };
-
-  const locate = () => {
-    setGeoError('');
-    if (!navigator.geolocation) return setGeoError('Геолокация недоступна в этом браузере.');
-    navigator.geolocation.getCurrentPosition(
-      (pos) => onChange({ ...me, shareLocation: true, lat: pos.coords.latitude, lng: pos.coords.longitude }),
-      () => setGeoError('Не удалось определить местоположение. Разрешите доступ в браузере.'),
-    );
+  const wipe = async () => {
+    if (!confirm('Удалить все ваши метки и отзывы? Это нельзя отменить.')) return;
+    setBusy(true);
+    setError('');
+    try {
+      await api.deleteMine();
+      onDeleted();
+    } catch {
+      setError('Не удалось удалить. Попробуйте ещё раз.');
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
     <div className="page">
-      <h1>Мой профиль</h1>
+      <h1>Профиль</h1>
       <label>
-        Имя
-        <input value={me.name} onChange={(e) => onChange({ ...me, name: e.target.value })} />
+        Имя или псевдоним
+        <input value={name} maxLength={40} onChange={(e) => setName(e.target.value)} onBlur={() => name.trim() && onRename(name.trim())} />
       </label>
-      <label>
-        Возраст ребёнка
-        <input placeholder="например, 1,5 года" value={me.childAge} onChange={(e) => onChange({ ...me, childAge: e.target.value })} />
-      </label>
-
-      <h3>Чем хочу заняться</h3>
-      <div className="chips">
-        {(Object.keys(STATUSES) as MomStatus[]).map((s) => (
-          <button key={s} className={`chip-btn${me.status === s ? ' on' : ''}`} onClick={() => onChange({ ...me, status: s })}>
-            {STATUSES[s].emoji} {STATUSES[s].label}
-          </button>
-        ))}
-      </div>
-
-      <h3>Интересы</h3>
-      <div className="chips">
-        {me.interests.map((i) => (
-          <button key={i} className="chip-btn on" onClick={() => onChange({ ...me, interests: me.interests.filter((x) => x !== i) })}>
-            {i} ×
-          </button>
-        ))}
-      </div>
-      <div className="row">
-        <input
-          placeholder="Добавить интерес"
-          value={interest}
-          onChange={(e) => setInterest(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && addInterest()}
-        />
-        <button className="primary" onClick={addInterest}>＋</button>
-      </div>
-
-      <h3>Где я</h3>
-      <p className="meta">Другие мамы увидят вашу метку только если включите показ. Выключить можно в любой момент.</p>
-      <label className="switch">
-        <input
-          type="checkbox"
-          checked={me.shareLocation}
-          onChange={(e) => (e.target.checked ? locate() : onChange({ ...me, shareLocation: false }))}
-        />
-        Показывать меня на карте
-      </label>
-      {geoError && <p className="error">{geoError}</p>}
+      <p className="meta">
+        Режим: {api.mode === 'cloud' ? 'общая карта (метки видят все участницы теста)' : 'только на этом устройстве'}.
+        Мы не храним ваш email, телефон и местоположение.
+      </p>
+      <h3>Мои данные</h3>
+      <button className="danger" disabled={busy} onClick={wipe}>Удалить мои метки и отзывы</button>
+      {error && <p className="error">{error}</p>}
     </div>
   );
 }

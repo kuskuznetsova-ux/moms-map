@@ -1,21 +1,13 @@
 import L from 'leaflet';
 import { useEffect } from 'react';
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from 'react-leaflet';
-import { KINDS, MOSCOW, STATUSES } from '../constants';
-import type { Me, Mom, Pin } from '../types';
+import { KINDS, MOSCOW } from '../constants';
+import type { Pin } from '../types';
 
 const pinIcon = (p: Pin) =>
   L.divIcon({
     className: 'mm-icon',
     html: `<span style="background:${KINDS[p.kind].color}">${KINDS[p.kind].emoji}</span>`,
-    iconSize: [36, 36],
-    iconAnchor: [18, 18],
-  });
-
-const momIcon = (emoji: string, me = false) =>
-  L.divIcon({
-    className: 'mm-icon',
-    html: `<span class="mom${me ? ' me' : ''}">${emoji}</span>`,
     iconSize: [36, 36],
     iconAnchor: [18, 18],
   });
@@ -39,16 +31,13 @@ function FlyTo({ target }: { target: [number, number] | null }) {
 
 interface Props {
   pins: Pin[];
-  moms: Mom[];
-  me: Me;
   placing: boolean;
   flyTo: [number, number] | null;
   onPickPin: (p: Pin) => void;
-  onPickMom: (m: Mom) => void;
   onPlace: (lat: number, lng: number) => void;
 }
 
-export default function MapView({ pins, moms, me, placing, flyTo, onPickPin, onPickMom, onPlace }: Props) {
+export default function MapView({ pins, placing, flyTo, onPickPin, onPlace }: Props) {
   return (
     <MapContainer center={MOSCOW} zoom={12} className={`map${placing ? ' placing' : ''}`} zoomControl={false}>
       <TileLayer
@@ -60,15 +49,6 @@ export default function MapView({ pins, moms, me, placing, flyTo, onPickPin, onP
       {pins.map((p) => (
         <Marker key={p.id} position={[p.lat, p.lng]} icon={pinIcon(p)} eventHandlers={{ click: () => (placing ? onPlace(p.lat, p.lng) : onPickPin(p)) }} />
       ))}
-      {moms.map((m) => (
-        <Marker
-          key={m.id}
-          position={[m.lat, m.lng]}
-          icon={momIcon(STATUSES[m.status].emoji)}
-          eventHandlers={{ click: () => (placing ? onPlace(m.lat, m.lng) : onPickMom(m)) }}
-        />
-      ))}
-      {me.shareLocation && <Marker position={[me.lat, me.lng]} icon={momIcon('📍', true)} />}
     </MapContainer>
   );
 }

@@ -26,36 +26,12 @@ export interface Pin {
   lng: number;
   ages: AgeGroup[];
   reviews: Review[];
+  author: string;
   // только для kind === 'event'
   startsAt?: string; // ISO
   price?: number; // 0 = бесплатно
   organizer?: string;
 }
 
-export type MomStatus = 'walk' | 'craft' | 'chat';
-
-export interface Mom {
-  id: string;
-  name: string;
-  status: MomStatus;
-  interests: string[];
-  childAge: string;
-  lat: number;
-  lng: number;
-}
-
-export interface Me {
-  name: string;
-  status: MomStatus;
-  interests: string[];
-  childAge: string;
-  shareLocation: boolean;
-  lat: number;
-  lng: number;
-}
-
-export interface AppState {
-  pins: Pin[];
-  moms: Mom[];
-  me: Me;
-}
+export type NewPin = Omit<Pin, 'id' | 'reviews'>;
+export type NewReview = Pick<Review, 'author' | 'rating' | 'text'>;
