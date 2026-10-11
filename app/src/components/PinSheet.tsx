@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { AGES, KINDS } from '../constants';
+import { Icon } from '../icons';
 import type { Pin } from '../types';
 
 const fmt = (iso: string) =>
@@ -23,16 +24,16 @@ export default function PinSheet({ pin, onClose, onReview, onReport }: Props) {
   return (
     <div className="sheet" role="dialog" aria-label={pin.title}>
       <button className="close" onClick={onClose} aria-label="Закрыть">×</button>
-      <div className="chip" style={{ background: kind.color }}>{kind.emoji} {kind.label}</div>
+      <div className="chip kind" style={{ background: kind.color }}><Icon name={kind.icon} size={16} stroke={2} /> {kind.label}</div>
       <h2>{pin.title}</h2>
       {pin.kind === 'event' && pin.startsAt && (
         <p className="meta">
-          🗓 {fmt(pin.startsAt)} · {pin.price ? `${pin.price} ₽` : 'бесплатно'}
+          <Icon name="calendar" size={16} /> {fmt(pin.startsAt)} · {pin.price ? `${pin.price} ₽` : 'бесплатно'}
           {pin.organizer && <> · {pin.organizer}</>}
         </p>
       )}
       {pin.ages.length > 0 && (
-        <p className="meta">👶 {pin.ages.map((a) => AGES.find((x) => x.value === a)?.label).join(', ')}</p>
+        <p className="meta"><Icon name="baby" size={16} /> {pin.ages.map((a) => AGES.find((x) => x.value === a)?.label).join(', ')}</p>
       )}
       <p>{pin.description}</p>
       <p className="meta">Добавила: {pin.author}</p>

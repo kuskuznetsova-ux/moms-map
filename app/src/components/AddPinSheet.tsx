@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { AGES, KIND_ORDER, KINDS } from '../constants';
+import { Icon } from '../icons';
 import type { AgeGroup, Kind, NewPin } from '../types';
 
 interface Props {
@@ -34,7 +35,7 @@ export default function AddPinSheet({ at, author, onSave, onCancel }: Props) {
             className={`chip-btn${kind === k ? ' on' : ''}`}
             onClick={() => setKind(k)}
           >
-            {KINDS[k].emoji} {KINDS[k].label}
+            <Icon name={KINDS[k].icon} size={16} /> {KINDS[k].label}
           </button>
         ))}
       </div>

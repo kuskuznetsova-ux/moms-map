@@ -7,6 +7,7 @@ import PinSheet from './components/PinSheet';
 import ProfileTab from './components/ProfileTab';
 import Welcome from './components/Welcome';
 import { AGES, KIND_ORDER, KINDS } from './constants';
+import { Icon } from './icons';
 import { useProfile } from './profile';
 import type { AgeGroup, Kind, NewPin, Pin } from './types';
 
@@ -118,7 +119,7 @@ export default function App() {
           <div className="filters">
             {KIND_ORDER.map((k) => (
               <button key={k} className={`chip-btn${kinds.includes(k) ? ' on' : ''}`} onClick={() => toggleKind(k)}>
-                {KINDS[k].emoji} {KINDS[k].label}
+                <Icon name={KINDS[k].icon} size={16} /> {KINDS[k].label}
               </button>
             ))}
             {AGES.map((a) => (
@@ -142,16 +143,16 @@ export default function App() {
             <div className="banner">
               Нажмите на карте, где поставить метку
               <span className="banner-actions">
-                <button onClick={here}>📍 Я здесь</button>
+                <button onClick={here}><Icon name="pin" size={15} /> Я здесь</button>
                 <button onClick={() => setPlacing(false)}>Отмена</button>
               </span>
             </div>
           )}
           {!placing && !draft && !selected && (
-            <button className="fab" onClick={() => setPlacing(true)} aria-label="Добавить метку">＋</button>
+            <button className="fab" onClick={() => setPlacing(true)} aria-label="Добавить метку"><Icon name="plus" size={28} stroke={2.2} /></button>
           )}
           {!placing && !draft && !selected && pins.length === 0 && !loadError && (
-            <div className="empty">Карта пока пуста. Нажмите «＋» и добавьте первое место.</div>
+            <div className="empty">Карта пока пуста. Нажмите «+» и добавьте первое место.</div>
           )}
           {selected && <PinSheet pin={selected} onClose={() => setSelectedId(null)} onReview={addReview} onReport={report} />}
           {draft && <AddPinSheet at={draft} author={profile.name} onCancel={() => setDraft(null)} onSave={savePin} />}
@@ -171,9 +172,9 @@ export default function App() {
 
       {toast && <div className="toast" role="status">{toast}</div>}
       <nav className="tabs">
-        <button className={tab === 'map' ? 'on' : ''} onClick={() => setTab('map')}>🗺️<span>Карта</span></button>
-        <button className={tab === 'events' ? 'on' : ''} onClick={() => setTab('events')}>🎈<span>Мероприятия</span></button>
-        <button className={tab === 'profile' ? 'on' : ''} onClick={() => setTab('profile')}>👩<span>Профиль</span></button>
+        <button className={tab === 'map' ? 'on' : ''} onClick={() => setTab('map')}><Icon name="map" size={26} /><span>Карта</span></button>
+        <button className={tab === 'events' ? 'on' : ''} onClick={() => setTab('events')}><Icon name="balloon" size={26} /><span>Мероприятия</span></button>
+        <button className={tab === 'profile' ? 'on' : ''} onClick={() => setTab('profile')}><Icon name="profile" size={26} /><span>Профиль</span></button>
       </nav>
     </div>
   );
