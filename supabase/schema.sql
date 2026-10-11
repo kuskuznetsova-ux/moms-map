@@ -67,3 +67,7 @@ grant usage on schema public to authenticated;
 grant select, insert, delete on public.pins to authenticated;
 grant select, insert, delete on public.reviews to authenticated;
 grant insert on public.reports to authenticated;
+
+-- Миграция 2 (препятствия и проезд с коляской). Можно запускать повторно.
+alter table public.pins add column if not exists tags text[] not null default '{}';
+alter table public.pins add column if not exists stroller text check (stroller in ('yes','partial','no'));

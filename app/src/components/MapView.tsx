@@ -38,13 +38,12 @@ interface Props {
   onPlace: (lat: number, lng: number) => void;
 }
 
+const OSM = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+
 export default function MapView({ pins, placing, flyTo, onPickPin, onPlace }: Props) {
   return (
     <MapContainer center={MOSCOW} zoom={12} className={`map${placing ? ' placing' : ''}`} zoomControl={false}>
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+      <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' url={OSM} />
       <ClickCatcher active={placing} onPick={onPlace} />
       <FlyTo target={flyTo} />
       {pins.map((p) => (

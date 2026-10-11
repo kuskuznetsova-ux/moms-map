@@ -83,3 +83,8 @@ h3 { font-size: 15px; margin: 16px 0 6px; }
 .fab { display: flex; align-items: center; justify-content: center; }
 .tabs button .icon { color: inherit; }
 .meta .icon { margin-right: 4px; }
+
+.stroller { display: inline-block; margin: 4px 0; padding: 3px 10px; border-radius: 999px; font-size: 13px; color: #fff; background: var(--muted); }
+.stroller.yes { background: #2f9e6a; }
+.stroller.partial { background: #e08a1e; }
+.stroller.no { background: #d64545; }
