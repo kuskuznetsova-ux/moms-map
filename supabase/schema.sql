@@ -52,3 +52,11 @@ create table if not exists public.reports (
 );
 alter table public.reports enable row level security;
 create policy "reports insert own" on public.reports for insert to authenticated with check (reporter_id = auth.uid());
+
+-- Права для роли authenticated (анонимный вход тоже даёт эту роль).
+-- Нужны на случай, если при создании проекта отключено «Automatically expose new tables».
+-- Доступ к строкам всё равно ограничивают политики выше.
+grant usage on schema public to authenticated;
+grant select, insert, delete on public.pins to authenticated;
+grant select, insert, delete on public.reviews to authenticated;
+grant insert on public.reports to authenticated;
